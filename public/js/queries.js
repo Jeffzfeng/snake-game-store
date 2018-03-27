@@ -19,25 +19,57 @@ function makeRequest(query) {
 // Queries for product information
 function fetchProducts() {
   var query = `
-
-  `;
+  query {
+      shop {
+        products(first: 4) {
+          edges {
+            node {
+              images (first: 1) {
+                edges {
+                  node {
+                    src
+                  }
+                }
+              }
+              variants (first: 1) {
+                edges {
+                  node {
+                    id
+                  }
+                }
+              } 
+            }
+          }
+        }
+      }
+    }
+ `;
 
   return makeRequest(query);
 }
 
 // // Buys new power up by creating new checkout with item
-// function buyPowerUp(variantId) {
-//   var query = `
-//     mutation {
-//       checkoutCreate() {
-//
-//         }
-//       }
-//     `;
-//
-//   return makeRequest(query);
-// }
-//
+function buyPowerUp(variantId) {
+  var query = `
+    mutation {
+      checkoutCreate(input: {
+        lineItems: [{
+            quantity: 1,
+            variantId: "${variantId}"
+          }]
+        }) {
+          checkout {
+            webUrl
+            completedAt
+            id
+          }
+        }
+      }
+    `;
+
+  return makeRequest(query);
+}
+
 // Checks completed purchases by querying checkouts with `completedAt` value
 function checkCompletedPurchases(checkoutIds) {
   var query = `
